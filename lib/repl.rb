@@ -135,33 +135,6 @@ class REPL
     end
   end
 
-  def tags_for_view(vname = @blog.view)
-    Dir.chdir(vname) do
-      fname = "tagpool"
-      if File.exist?(fname)
-        tags = File.readlines(fname).map(&:chomp)
-      else
-        tags = []
-      end
-    end
-    tags.sort
-  end
-
-  def all_tags
-    all = []
-    @blog.views.each {|view| all.append(*tags_for_view(view)) }
-    all.sort + ["NEW TAG"]
-  end
-
-  def edit_file(file, vim: "")
-    # ed = @blog.editor
-    ed = "vim"
-    params = vim if ed =~ /vim$/
-    # result = system!("#{@blog.editor} #{file} #{params}")
-    raise EditorProblem(file) unless result
-    cmd_clear
-  end
-
   def cmd_help
     puts retrieve(:Help) + BlankLine
   end
@@ -172,7 +145,7 @@ class REPL
     sleep 0.1
     RubyText.stop
     sleep 0.1
-    system("clear")
+    # system("clear")
     exit
   end
 
@@ -198,13 +171,6 @@ class REPL
   end
 
 ## Other stuff...
-
-  def pick_editor
-    choices = %w[vim emacs vi nano]
-    r, c = STDSCR.rc
-    num, name = STDSCR.menu(r: r, c: c+6, title: "Default editor", items: choices)
-    file = `which #{name}`.chomp
-  end
 
   def set_prompt(str, color = Red, style = :bold)
     @prompt = fx(str, color, style)
